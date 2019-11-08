@@ -64,10 +64,6 @@ def mapInstanceBookable(value):
     else:
         return 0
 
-# def mapAmenities(value):
-#     ohe = OneHotEncoder()
-#     return ohe.fit(value)
-
 def preProcessDataSet():
 
     dataSetTrain = 'dataset.csv'
@@ -75,10 +71,9 @@ def preProcessDataSet():
 
     # these columns are hard to use for KNN, so I just drop provisonally
     columnNeedDrop = [
-        'description', 'latitude', 'longitude', 'neighbourhood', 'name',
-        'thumbnail_url'
+        'latitude', 'longitude', 'thumbnail_url', 'neighbourhood'
     ]
-    # dfDataset.drop(columnNeedDrop, axis=1, inplace=True)
+    dfDataset.drop(columnNeedDrop, axis=1, inplace=True)
     # map property type as number, the rule is {Apartment: 0.0, House: 1.0}
     dfDataset['property_type'] = LabelEncoder().fit_transform(dfDataset['property_type'])
     # map room type as number, the rule is {Entire home/apt: 0, Private room: 1, Shared room: 3}
@@ -97,11 +92,17 @@ def preProcessDataSet():
     dfDataset['instant_bookable'] = LabelEncoder().fit_transform(dfDataset['instant_bookable'])
     cityLabel = LabelEncoder().fit_transform(dfDataset['city'])
     dfDataset['city'] = OneHotEncoder(categories='auto').fit_transform(cityLabel.reshape(-1, 1))
+    amenitiesLabel = LabelEncoder().fit_transform(dfDataset['amenities'])
+    dfDataset['amenities'] = OneHotEncoder(categories='auto').fit_transform(amenitiesLabel.reshape(-1, 1))
+    nameLabel = LabelEncoder().fit_transform(dfDataset['name'])
+    dfDataset['name'] = OneHotEncoder(categories='auto').fit_transform(nameLabel.reshape(-1, 1))
+    descriptionLabel = LabelEncoder().fit_transform(dfDataset['description'])
+    dfDataset['description'] = OneHotEncoder(categories='auto').fit_transform(descriptionLabel.reshape(-1, 1))
 
     print(dfDataset.shape[1], dfDataset.shape[0])
     dfDataset.dropna(axis=0, inplace=True)
     print(dfDataset.shape[1], dfDataset.shape[0])
-    print(dfDataset.head(100))
+    print(dfDataset.head(10))
 
 
 def main():
