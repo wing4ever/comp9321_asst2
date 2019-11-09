@@ -3,7 +3,7 @@ from flask import Flask
 import sqlite3
 from sqlite3 import Error
 from flask_sqlalchemy import SQLAlchemy
-from flask_restplus import Api
+from flask_restplus import Api, Resource
 from flask_marshmallow import Marshmallow
 
 
@@ -36,66 +36,24 @@ should there be a foreign key between property and facility?
 not sure what would be the primary key & data type for each model?
 specify format for date string?
 """
-class Property(db.Model):
-    neighbourhood = db.Column(db.String(100))
-    name = db.Column(db.String(100), primary_key=True)
-    latitude = db.Column(db.Float(),nullable=False)
-    longtitude = db.Column(db.Float(),nullable=False)
-    property_type = db.Column(db.String(100))
-    room_type = db.Column(db.String(100))
-
-class Facility(db.Model): #missing primary key !!!
-    accommodations = db.Column(db.Integer)
-    bedrooms = db.Column(db.Integer)
-    bathrooms = db.Column(db.Integer)
-    beds = db.Column(db.Integer)
-    bed_types = db.Column(db.String(100))
-    amenities = db.Column(db.String(100))
-    description = db.Column(db.String(100))
-
-class Host(db.Model): #should have name or id as primary key?
-    since = db.Column(db.String(100))
-    profile_picture = db.Column(db.Integer,nullable=False) #boolean
-    identity_verified = db.Column(db.Integer,nullable=False) #boolean
-    response_rate =db.Column(db.Float())
-
-class Policy(db.Model): #forgeign key to preperty and primary key?
-    cancellation = db.Column(db.String(100))
-    free_cleaning = db.Column(db.Integer,nullable=False) #boolean
-    instant_bookable = db.Column(db.Integer,nullable=False) #boolean
-
-class Review(db.Model):
-    first = db.Column(db.String(100))
-    last = db.Column(db.String(100))
-    total = db.Column(db.Integer)
-    rating = db.Column(db.Integer)
+class User(db.Model):
+    username = db.Column(db.String(100), primary_key=True)
+    password = db.Column(db.String(100),nullable=False)
+    
 
 #json ma schema
-class PropertySchema(ma.ModelSchema):
+class UserSchema(ma.ModelSchema):
     class Meta:
-        model = Property
+        model = User
 
-class FacilitySchema(ma.ModelSchema):
-    class Meta:
-        model = Facility
 
-class HostSchema(ma.ModelSchema):
-    class Meta:
-        model = Host
-
-class PolicySchema(ma.ModelSchema):
-    class Meta:
-        model = Policy
-
-class ReviewSchema(ma.ModelSchema):
-    class Meta:
-        model = Review
-
-@app.route('/')
-def get():
-    return "Hello World!"
+@app.route('/testing')
+class Testing(Resource):
+    def get(self):
+        return {'message' : 'testing get'}
 
 #main
 if __name__ == '__main__':
     create_db("data.db")
+    # db.create_all()
     app.run(debug=True)
