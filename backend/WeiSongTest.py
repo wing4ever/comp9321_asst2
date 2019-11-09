@@ -56,6 +56,8 @@ def preProcessDataSet():
     # descriptionLabel = LabelEncoder().fit_transform(dfDataset['description'])
     # dfDataset['description'] = OneHotEncoder(categories='auto').fit_transform(descriptionLabel.reshape(-1, 1))
 
+    dfDataset['host_response_rate'] = dfDataset['host_response_rate'].str.replace('%', '').astype('float')
+
     print('before dropna')
     print(dfDataset.shape[1], dfDataset.shape[0])
     dfDataset.dropna(axis=0, inplace=True)
@@ -63,7 +65,7 @@ def preProcessDataSet():
     print(dfDataset.shape[1], dfDataset.shape[0])
     print(dfDataset.dtypes)
 
-    dfDataset['host_response_rate'] = dfDataset['host_response_rate'].str.replace('%', '').astype(float)
+    
 
     # finally, you get the data you can use for modelling
     dfDataset = normalization(dfDataset)
@@ -72,10 +74,8 @@ def preProcessDataSet():
     # and left are our features
     allFeatureData = dfDataset.drop('review_scores_rating', axis=1)
 
-def main():
-    preProcessDataSet()
 
 if __name__ == "__main__":
     pd.set_option('display.max_columns', None)
     pd.set_option('display.max_rows', 1000)
-    main()
+    preProcessDataSet()
