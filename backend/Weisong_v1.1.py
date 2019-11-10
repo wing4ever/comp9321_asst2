@@ -18,7 +18,7 @@ def normalization(dfDataset):
 def preProcessDataSet():
     """this function is uesed to pre process the dataset for modelling"""
 
-    dataSetTrain = 'train.csv'
+    dataSetTrain = 'dataset.csv'
     dfDataset = pd.read_csv(dataSetTrain)
     # these columns are hard to use for KNN, so I just drop provisonally
     columnNeedDrop = [
