@@ -1,4 +1,4 @@
-import pickle
+import joblib
 import pandas as pd
 import numpy as np
 from tabulate import tabulate
@@ -24,14 +24,7 @@ def trainModel(train_x, test_x, train_y, test_y):
     #train the model
     regr.fit(train_x,train_y)
     #predict the results
-    predicted_y = regr.predict(test_x)
-    #print the results and metrics   
-    # ~ for i in range(100):
-        # ~ print("Expected:", test_y[i], "Predicted:", predicted_y[i]) 
-    print(tabulate([['mean_absolute_error', mean_absolute_error(test_y,predicted_y)], \
-      ['mean_squared_error', mean_squared_error(test_y,predicted_y)],['r2_score',r2_score(test_y,predicted_y)]], headers=['Metric', 'Value'], tablefmt='orgtbl'))
-    
-    print("linear regression model with PolynomialFeatures")
+    predicted_y = regr.predict(test_x) 
     #transform input data
     train_x_ = PolynomialFeatures(degree=2, include_bias=False).fit_transform(train_x)
     test_x_ = PolynomialFeatures(degree=2, include_bias=False).fit_transform(test_x)
@@ -41,18 +34,12 @@ def trainModel(train_x, test_x, train_y, test_y):
     regr.fit(train_x_,train_y)
     #predict the results
     predicted_y = regr.predict(test_x_)
-    #print the metrics    
-    print(tabulate([['mean_absolute_error', mean_absolute_error(test_y,predicted_y)], \
-      ['mean_squared_error', mean_squared_error(test_y,predicted_y)],['r2_score',r2_score(test_y,predicted_y)]], headers=['Metric', 'Value'], tablefmt='orgtbl'))
+    joblib.dump(regr, 'linearRegression.pkl')
     
-    
+    return predicted_y
     
 if __name__ == "__main__":
     #load data from csv files
     train_x, test_x, train_y, test_y = loadData("feature.csv","label.csv")
     #train the model
     trainModel(train_x, test_x, train_y, test_y)
-    
-    
-    
-    
