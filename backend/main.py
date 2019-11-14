@@ -23,7 +23,7 @@ def create_db(db_file):
 
 #set up
 app = Flask(__name__)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///data.db'
 api = Api(app)
 db = SQLAlchemy(app)
