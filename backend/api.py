@@ -1,6 +1,7 @@
 from flask import Blueprint, make_response, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import current_user, login_required
+from flask_cors import cross_origin
 import joblib, pandas
 import matplotlib.pyplot as plt
 import base64
@@ -14,13 +15,14 @@ api = Blueprint('api', __name__)
 # basic info + statistical info
 @api.route('/home/user/')
 @login_required
-def get_info_curuser():
-
+@cross_origin()
+def get_info_current_user():
     resp = make_response(jsonify({'username': str(current_user.username), 'status': 200}))
     return resp
 
 # this service is also not good
 @api.route('/home/user/', methods=['POST'])
+@cross_origin()
 def create_user():
     # get json data from user's request
     data = json.loads(request.get_data())
@@ -53,6 +55,7 @@ linearRegression = joblib.load('backend/pkl/linearRegression.pkl')
 
 @api.route('/home/prediction/', methods=['POST'])
 @requires_auth
+@cross_origin()
 def get_prediction():
 
     # below is input example WEISONG
@@ -101,6 +104,7 @@ def get_prediction():
 
 @api.route('/home/factors/', methods=['POST'])
 @requires_auth
+@cross_origin()
 def get_relationship():
     data = json.loads(request.get_data())
     factor = data.get('factor')

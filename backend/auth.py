@@ -13,6 +13,7 @@ from .authentication_token import auth_token, requires_auth
 auth = Blueprint('auth', __name__)
 
 @auth.route('/login/', methods=['POST'])
+@cross_origin()
 def login():
 
     data = json.loads(request.get_data())
@@ -30,6 +31,7 @@ def login():
 
 # signup, pleae remember the URL is '/signup/'
 @auth.route('/signup/', methods=['POST'])
+@cross_origin()
 def post():
 
     data = json.loads(request.get_data())

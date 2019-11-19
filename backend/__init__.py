@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import sqlite3
-from flask_cors import CORS
+# from flask_cors import CORS
 
 db = SQLAlchemy()
 
@@ -11,10 +11,10 @@ def create_app():
     app = Flask(__name__)
     # database
     app.config['SECRET_KEY'] = 'thisissecret'
-    app.config['CORSE_HEADERS'] = 'Content-Type'
+    # app.config['CORSE_HEADERS'] = 'Content-Type'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-    CORS(app, resources=r'/*')
+    # CORS(app, resources=r'/*')
     db.init_app(app)
 
     login_manager = LoginManager()
