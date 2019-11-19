@@ -1,0 +1,11 @@
+# first thing install all dependencies
+    pip3 install -r requirements.txt
+# second install local database, run following command
+    python3
+    from rest import db, create_app
+    db.create_all(app=create_app())
+    exit()
+# third run following command under root folder
+    export FLASK_APP=backend-select
+    export FLASK_ENV=development
+    flask run
