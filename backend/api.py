@@ -1,6 +1,6 @@
 from flask import Blueprint, make_response, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import current_user
+from flask_login import current_user, login_required
 import joblib, pandas
 import matplotlib.pyplot as plt
 import base64
