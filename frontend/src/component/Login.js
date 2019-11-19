@@ -41,13 +41,12 @@ class Login extends Component {
       
         fetch('http://127.0.0.1:5000/login/',{
             method:'POST',
-            credentials:'include',
             headers : myHeader,
-            mode : 'no-cors',
             body: JSON.stringify(myBody)
         }).then(results => {
             return results.json();
         }).then(response => {
+            console.log(response)
             if (response.status===201){
                 localStorage.setItem('user_token',response.token);
                 message.success('login successed')
@@ -76,10 +75,8 @@ class Login extends Component {
         fetch('http://127.0.0.1:5000/signup/',{
             method:'POST',
             headers : myHeader,
-            mode : 'no-cors',
             body: JSON.stringify(myBody)
         }).then(results => {
-            console.log(results.json());
             return results.json();
         }).then(response => {
             console.log(response)

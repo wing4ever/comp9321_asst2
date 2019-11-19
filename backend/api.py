@@ -12,7 +12,7 @@ api = Blueprint('api', __name__)
 
 # show the info of the current user
 # basic info + statistical info
-@api.route('/home/user/')
+@api.route('/home/user/',methods=['GET'])
 @login_required
 def get_info_curuser():
 

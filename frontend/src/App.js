@@ -33,13 +33,15 @@ class App extends Component {
       "Content-Type":"application/json; charset=utf8",
       "user_token" : this.state.user_token
     });
-
+    console.log(this.state.user_token)
     fetch('http://127.0.0.1:5000/home/user/',{
       method:'GET',
       headers : myHeader
     }).then(results => {
+      console.log(results);
       return results.json();
     }).then(data => {
+      console.log(data)
       if (data.status === 200){
         this.setState({'username':data.username})
       }else{
