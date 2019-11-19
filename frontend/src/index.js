@@ -1,15 +1,29 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter as Router } from "react-router-dom";
+import { Redirect,Route, BrowserRouter as Router } from "react-router-dom";
 
 import App from "./App";
+import Login from "./component/Login"
 
 import "antd/dist/antd.css";
 
-
+const AuthenticatedRoute = ({ component: Component, ...rest }) => (
+  <Route {...rest} render={props => (
+    localStorage.getItem('user_token') ? (
+      <Component {...props}/>
+    ) : (
+      <Redirect to={{
+        pathname: '/login',
+        state: { from: props.location }
+      }}/>
+    )
+  )}/>
+)
+localStorage.removeItem('user_token');
 ReactDOM.render(
   <Router>
-    <App />
+    <Route path='/login' component={Login}/>
+    <AuthenticatedRoute exact path='/' component={App} />
   </Router>,
   document.getElementById("root")
 );

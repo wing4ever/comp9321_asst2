@@ -42,8 +42,8 @@ class Login extends Component {
         fetch('http://127.0.0.1:5000/login/',{
             method:'POST',
             credentials:'include',
-            mode : 'no-cors',
             headers : myHeader,
+            mode : 'no-cors',
             body: JSON.stringify(myBody)
         }).then(results => {
             return results.json();

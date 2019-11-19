@@ -6,6 +6,6 @@
     db.create_all(app=create_app())
     exit()
 # third run following command under root folder
-    export FLASK_APP=backend-select
+    export FLASK_APP=backend
     export FLASK_ENV=development
     flask run
