@@ -14,18 +14,21 @@ class Prediction extends Component {
     };
   }
   handleSubmit = e => {
-    console.log("start")
+    console.log("start");
+    console.log(localStorage.getItem('user_token'))
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log(values)
+        console.log(JSON.stringify(
+          values
+        ))
         fetch('http://127.0.0.1:5000/home/prediction/', {
           method: 'POST',
           headers: {
             
-            'Content-Type': 'application/json',
+            "Content-Type":"application/json",
             'Accept': 'application/json',
-            "user_token":this.state.user_token
+            "user_token":localStorage.getItem('user_token'),
           },
           body: JSON.stringify(
             values
@@ -34,10 +37,10 @@ class Prediction extends Component {
         })
         .then(response => response.json())
         .then((response) =>{
-          console.log("response")
-          let val = response.values.Bed_type
-          console.log(val);
-          this.setState({result: val})
+          console.log(this.state.user_token)
+          console.log(localStorage.getItem('user_token'))
+          console.log(response)
+          this.setState({result: response.prediction_result})
         })
       }
     });
