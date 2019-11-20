@@ -19,12 +19,13 @@ class Prediction extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log(values)
-        fetch('http://127.0.0.1:5000/home/prediction', {
+        fetch('http://127.0.0.1:5000/home/prediction/', {
           method: 'POST',
           headers: {
             
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            "user_token":this.state.user_token
           },
           body: JSON.stringify(
             values

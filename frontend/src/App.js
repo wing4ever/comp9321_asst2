@@ -39,7 +39,7 @@ class App extends Component {
       headers : myHeader
     }).then(results => {
       console.log(results);
-      return results.json();
+      return results.json(); 
     }).then(data => {
       console.log(data)
       if (data.status === 200){

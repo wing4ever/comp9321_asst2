@@ -19,11 +19,12 @@ class Factors extends Component {
     handleChange=(value)=>{
         console.log(`selected ${value}`);
         //当知道后端url时就可以在这里进行http request并将返回的结果储存入state
-        fetch('http://127.0.0.1:5000/home/factors', {
+        fetch('http://127.0.0.1:5000/home/factors/', {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            "user_token":this.state.user_token
           },
           body: JSON.stringify({
             value 
