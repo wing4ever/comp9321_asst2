@@ -123,7 +123,7 @@ class HomePrediction(Resource):
         featuresFromUser = pandas.DataFrame(prepareFeatures)
         prediction_result = linearRegression.predict(featuresFromUser)
 
-        resp = make_response(jsonify({"prediction_result" : prediction_result[0][0], 'status': 201}))
+        resp = make_response(jsonify({"prediction_result": prediction_result[0][0], 'status': 201}))
         return resp
 
 @restplus_api.route('/home/factors/')
@@ -143,7 +143,9 @@ class HomeFactor(Resource):
             data['factor'], data['popularity'] = thisFactor, popularity
 
             plt.title(f'relationship of {factor} and popularity')
-            plt.plot(factor, popularity, 'b')
+            plt.xlabel('property type')
+            plt.ylabel('popularity level')
+            plt.scatter(thisFactor, popularity)
             sio = BytesIO()
             plt.savefig(sio, format='png')
             data = base64.encodebytes(sio.getvalue()).decode()
