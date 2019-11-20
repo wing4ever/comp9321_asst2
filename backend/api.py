@@ -117,7 +117,9 @@ def get_relationship():
         data['factor'], data['popularity'] = thisFactor, popularity
 
         plt.title(f'relationship of {factor} and popularity')
-        plt.plot(factor, popularity, 'b')
+        plt.xlabel('property type')
+        plt.ylabel('popularity level')
+        plt.scatter(thisFactor, popularity)
         sio = BytesIO()
         plt.savefig(sio, format='png')
         data = base64.encodebytes(sio.getvalue()).decode()
