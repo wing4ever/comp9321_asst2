@@ -12,37 +12,40 @@ api = Blueprint('api', __name__)
 
 # show the info of the current user
 # basic info + statistical info
-@api.route('/home/user/',methods=['GET'])
-@login_required
+@api.route('/home/user/', methods=['GET'])
+@requires_auth
 def get_info_curuser():
 
-    resp = make_response(jsonify({'username': str(current_user.username), 'status': 200}))
+    token = request.headers.get('user_token')
+    user = auth_token.validate_token(token)
+
+    resp = make_response(jsonify({'username': str(user), 'status': 200}))
     return resp
 
-# this service is also not good
-@api.route('/home/user/', methods=['POST'])
-def create_user():
-    # get json data from user's request
-    data = json.loads(request.get_data())
-    username, password = data['username'].strip(), data['password'].strip()
-    # username and password should be valid and username is unique
-    if username and password:
-        # hash the password and store into db
-        hashed_password = generate_password_hash(password, method='sha256')
-        newUser = User(public_id=str(uuid.uuid4()), username=username, password=hashed_password)
-        # check the username if already exist or not
-        alreadyExit = 0
-        for user in User.query.all():
-            if user.username == newUser.username:
-                alreadyExit = 1
-        if not alreadyExit:
-            db.session.add(newUser)
-            db.session.commit()
-            return jsonify({'message': 'user create success', 'status': 201})
-        else:
-            return jsonify({'message':'user already exit-->need redirct to logon page'})
-    else:
-        return jsonify({'message':'username or password is empty-->need redirct logon page'})
+# # this service is also not good
+# @api.route('/home/user/', methods=['POST'])
+# def create_user():
+#     # get json data from user's request
+#     data = json.loads(request.get_data())
+#     username, password = data['username'].strip(), data['password'].strip()
+#     # username and password should be valid and username is unique
+#     if username and password:
+#         # hash the password and store into db
+#         hashed_password = generate_password_hash(password, method='sha256')
+#         newUser = User(public_id=str(uuid.uuid4()), username=username, password=hashed_password)
+#         # check the username if already exist or not
+#         alreadyExit = 0
+#         for user in User.query.all():
+#             if user.username == newUser.username:
+#                 alreadyExit = 1
+#         if not alreadyExit:
+#             db.session.add(newUser)
+#             db.session.commit()
+#             return jsonify({'message': 'user create success', 'status': 201})
+#         else:
+#             return jsonify({'message':'user already exit-->need redirct to logon page'})
+#     else:
+#         return jsonify({'message':'username or password is empty-->need redirct logon page'})
 
 # this part is used to provide the service of prediction
 # totally speaking, there are two methods one is GET which
