@@ -1,4 +1,4 @@
-from flask import Blueprint, make_response, request, jsonify
+from flask import Blueprint, make_response, request, jsonify,redirect,url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import current_user, login_required
 import json
@@ -125,4 +125,5 @@ def get_relationship():
         plt.savefig(sio, format='png')
         data = base64.encodebytes(sio.getvalue()).decode()
         plt.close()
-        return data
+        resp = make_response(jsonify({"image" : data , 'status': 200}))
+        return resp
