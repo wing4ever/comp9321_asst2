@@ -29,7 +29,7 @@ class Factors extends Component {
         })
         .then((response) => response.json())
         .then((response) =>{
-                if(response.status === 200){
+                if(response.status === 201){
                     console.log(response.image) 
                     console.log(response)
                     this.setState({src : `data:image/png;base64,${response.image}`});
