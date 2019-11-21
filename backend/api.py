@@ -125,5 +125,5 @@ def get_relationship():
         plt.savefig(sio, format='png')
         data = base64.encodebytes(sio.getvalue()).decode()
         plt.close()
-        resp = make_response(jsonify({"image" : data , 'status': 200}))
+        resp = make_response(jsonify({"image" : data , 'status': 201}))
         return resp
