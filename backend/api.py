@@ -12,11 +12,23 @@ from flask_restplus import Api, Resource
 import json
 
 api = Blueprint('api', __name__)
-restplus_api = Api(api)
+restplus_api = Api(api,
+                   title="Airbnb Home Popularity Prediction", # Documentation title
+                   )
+login_api = restplus_api.namespace('login',
+                                  description="Shows user authentication process"
+                                  )
+user_api = restplus_api.namespace('user',
+                                  description="Shows user registration, and user account information"
+                                  )
 
+home_api = restplus_api.namespace('home',
+                                  description="Relationship between Airbnb Home features and popularity, & popularity prediction"
+                                  )
 
-@restplus_api.route('/login/')
+@login_api.route('/')
 class UserLogin(Resource):
+    @user_api.doc(description="Sign in to the API with username & password to receive API token")
     @cross_origin()
     def post(self):
         data = json.loads(request.get_data())
@@ -35,9 +47,10 @@ class UserLogin(Resource):
 
 # show the info of the current user
 # basic info + statistical info
-@restplus_api.route('/user/')
+@user_api.route('/')
 class UserAccount(Resource):
     @requires_auth
+    @user_api.doc(description="Get information of current user account")
     @cross_origin()
     def get(self):
         token = request.headers.get('user_token')
@@ -45,9 +58,10 @@ class UserAccount(Resource):
         resp = make_response(jsonify({'username': str(user), 'status': 200}))
         return resp
 
+    @user_api.doc(description="Register new user account")
     @cross_origin()
     # signup or register new user account
-    def post():
+    def post(self):
         data = json.loads(request.get_data())
         username, password = data['username'].strip(), data['password'].strip()
 
@@ -76,9 +90,10 @@ class UserAccount(Resource):
 # from user
 linearRegression = joblib.load('backend/pkl/linearRegression.pkl')
 
-@restplus_api.route('/home/prediction/')
+@home_api.route('/prediction/')
 class HomePrediction(Resource):
     @requires_auth
+    @home_api.doc(description="Get Prediction of popularity of the house base on its features")
     @cross_origin()
     def post(self):
 
@@ -126,9 +141,10 @@ class HomePrediction(Resource):
         resp = make_response(jsonify({"prediction_result": prediction_result[0][0], 'status': 201}))
         return resp
 
-@restplus_api.route('/home/factors/')
+@home_api.route('/factors/')
 class HomeFactor(Resource):
     @requires_auth
+    @home_api.doc(description="Get relationship of any feature with its popularity")
     @cross_origin()
     def post(self):
         data = json.loads(request.get_data())
