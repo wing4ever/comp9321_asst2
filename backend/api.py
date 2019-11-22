@@ -9,6 +9,7 @@ from io import BytesIO
 from .model import User
 from .authentication_token import auth_token, requires_auth
 
+
 api = Blueprint('api', __name__)
 
 # show the info of the current user
