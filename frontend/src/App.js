@@ -13,10 +13,11 @@ class App extends Component {
     this.state = {
         'user_token' : localStorage.getItem('user_token')
         ,'username' : ''
+        ,'user_report':''
     }
   }
 
-
+  
   componentDidMount(){
     window.onbeforeunload = function (e) {
       window.onunload = function () {
@@ -33,6 +34,7 @@ class App extends Component {
       "Content-Type":"application/json; charset=utf8",
       "user_token" : this.state.user_token
     });
+    //get user info
     console.log(this.state.user_token)
     fetch('http://127.0.0.1:5000/home/user/',{
       method:'GET',
@@ -44,6 +46,7 @@ class App extends Component {
       console.log(data)
       if (data.status === 200){
         this.setState({'username':data.username})
+        this.setState({'user_report':data.user_report})
       }else{
         //should have error message
         console.log(data)
@@ -58,7 +61,7 @@ class App extends Component {
   };
 
   render() {
-    const {username} = this.state;
+    const {username,user_report} = this.state;
     return (
       <div>
         <Header style={{backgroundColor: 'rgba(79, 134, 247, 0.0)'}}>
@@ -73,7 +76,12 @@ class App extends Component {
                 We mainly provide 2 services to help hosts to make decisions. Firstly, we have perdiciton basing on 
                 input features given by user. Secondly, we have factor vs popularity which shows data visualisation for 
                 how selected factors affects popularity. Both service are aim to help user make better decisions.
-              </p>
+              </p><br/>
+              {
+                  user_report === ''
+                  ? null
+                  : <div><img src={user_report} alt='user report'/></div>
+              }
             </TabPane>
             <TabPane tab="prediction" key="2"><Prediction/></TabPane>
             <TabPane tab="Factors" key="3"><Factors/></TabPane>

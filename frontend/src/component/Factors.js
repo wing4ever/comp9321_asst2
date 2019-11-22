@@ -55,9 +55,9 @@ class Factors extends Component {
                     here should be chart of selected feature-popularity
                 </Content>
                 {
-                    this.state.src == null
+                    this.state.src === null
                     ? null
-                    : <div><img src={this.state.src} /></div>
+                    : <div><img src={this.state.src} alt='feature vs popularity'/></div>
                 }
             </div>
             );
