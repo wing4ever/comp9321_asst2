@@ -1,6 +1,5 @@
 from flask import Blueprint, make_response, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import current_user, login_required
 from flask_cors import cross_origin
 import joblib, pandas
 import matplotlib.pyplot as plt
@@ -8,15 +7,61 @@ import base64
 from io import BytesIO
 from .model import User
 from .authentication_token import auth_token, requires_auth
-from flask_restplus import Api, Resource
+from flask_restplus import Api, Resource, fields
 import json
+from . import db
 
 api = Blueprint('api', __name__)
-restplus_api = Api(api)
+restplus_api = Api(api,
+                   authorizations= {
+                       "TOKEN-BASED": {
+                           "type": "apiKey",
+                           "name": "API-TOKEN",
+                           "in": "header"
+                       }
+                   },
+                   title="Airbnb Home Popularity Prediction", # Documentation title
+                   )
+login_api = restplus_api.namespace('login',
+                                   description="User authentication process"
+                                   )
+user_api = restplus_api.namespace('user',
+                                  description="User registration, and user account information"
+                                  )
 
+home_api = restplus_api.namespace('home',
+                                  security="TOKEN-BASED",
+                                  description="Relationship between Airbnb Home features and popularity, & popularity prediction"
+                                  )
 
-@restplus_api.route('/login/')
+user_login_model = user_api.model('User', {
+    'username': fields.String,
+    'password': fields.String
+})
+
+home_prediction_model = home_api.model('Home', {
+    'log_price': fields.Float,
+    'property_type': fields.String,
+    'room_type': fields.String,
+    'accommodates': fields.Integer,
+    'bathrooms': fields.Integer,
+    'bed_type': fields.String,
+    'cancellation_policy': fields.String,
+    'cleaning_fee': fields.Integer,
+    'city': fields.String,
+    'host_has_profile_pic': fields.String,
+    'host_identity_verified': fields.String,
+    'host_response_rate': fields.String,
+    'instant_bookable': fields.String,
+    'number_of_reviews': fields.Integer,
+    'bedrooms': fields.Float,
+    'beds': fields.Float
+})
+
+@login_api.route('/')
 class UserLogin(Resource):
+    @login_api.doc(description="Sign in to the API with username & password to receive API token")
+    @login_api.expect(user_login_model)
     @cross_origin()
     def post(self):
         data = json.loads(request.get_data())
@@ -35,19 +80,22 @@ class UserLogin(Resource):
 
 # show the info of the current user
 # basic info + statistical info
-@restplus_api.route('/user/')
+@user_api.route('/')
 class UserAccount(Resource):
     @requires_auth
+    @user_api.doc(security="TOKEN-BASED", description="Get information of current user account")
     @cross_origin()
     def get(self):
-        token = request.headers.get('user_token')
+        token = request.headers.get('API-TOKEN')
         user = auth_token.validate_token(token)
         resp = make_response(jsonify({'username': str(user), 'status': 200}))
         return resp
 
+    @user_api.doc(description="Register new user account")
+    @user_api.expect(user_login_model)
     @cross_origin()
     # signup or register new user account
-    def post():
+    def post(self):
         data = json.loads(request.get_data())
         username, password = data['username'].strip(), data['password'].strip()
 
@@ -76,9 +124,11 @@ class UserAccount(Resource):
 # from user
 linearRegression = joblib.load('backend/pkl/linearRegression.pkl')
 
-@restplus_api.route('/home/prediction/')
+@home_api.route('/prediction/')
 class HomePrediction(Resource):
     @requires_auth
+    @home_api.doc(security="TOKEN-BASED", description="Get Prediction of popularity of the house base on its features")
+    @home_api.expect(home_prediction_model)
     @cross_origin()
     def post(self):
 
@@ -126,9 +176,10 @@ class HomePrediction(Resource):
         resp = make_response(jsonify({"prediction_result": prediction_result[0][0], 'status': 201}))
         return resp
 
-@restplus_api.route('/home/factors/')
+@home_api.route('/factors/')
 class HomeFactor(Resource):
     @requires_auth
+    @home_api.doc(security="TOKEN-BASED", description="Get relationship of any feature with its popularity")
     @cross_origin()
     def post(self):
         data = json.loads(request.get_data())

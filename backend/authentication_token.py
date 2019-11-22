@@ -37,7 +37,7 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
 
-        token = request.headers.get('user_token')
+        token = request.headers.get('API-TOKEN')
         if not token:
             jsonify({'error': 'Authentication token is missing', 'status': 401})
 
