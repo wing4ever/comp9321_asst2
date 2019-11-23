@@ -9,7 +9,7 @@ import "antd/dist/antd.css";
 
 const AuthenticatedRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={props => (
-    localStorage.getItem('user_token') ? (
+    localStorage.getItem('API_TOKEN') ? (
       <Component {...props}/>
     ) : (
       <Redirect to={{
@@ -19,7 +19,7 @@ const AuthenticatedRoute = ({ component: Component, ...rest }) => (
     )
   )}/>
 )
-localStorage.removeItem('user_token');
+localStorage.removeItem('API_TOKEN');
 ReactDOM.render(
   <Router>
     <Route path='/login' component={Login}/>
