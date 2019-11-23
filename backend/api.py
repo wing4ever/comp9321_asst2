@@ -6,10 +6,11 @@ import joblib, pandas
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
+from . import db
 from .model import User
 from .authentication_token import auth_token, requires_auth
 from .prediction import conbin_prediction
-from flask_restplus import Api, Resource
+from flask_restplus import Api, Resource, fields
 import json, os
 
 api = Blueprint('api', __name__)
