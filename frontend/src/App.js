@@ -11,7 +11,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        'user_token' : localStorage.getItem('user_token')
+        'API_TOKEN' : localStorage.getItem('API_TOKEN')
         ,'username' : ''
         ,'user_report':''
     }
@@ -32,10 +32,10 @@ class App extends Component {
     
     var myHeader = new Headers({
       "Content-Type":"application/json; charset=utf8",
-      "user_token" : this.state.user_token
+      "API_TOKEN" : this.state.API_TOKEN
     });
     //get user info
-    console.log(this.state.user_token)
+    console.log(this.state.API_TOKEN)
     fetch('http://127.0.0.1:5000/home/user/',{
       method:'GET',
       headers : myHeader
@@ -46,7 +46,7 @@ class App extends Component {
       console.log(data)
       if (data.status === 200){
         this.setState({'username':data.username})
-        this.setState({'user_report':data.user_report})
+        //this.setState({'user_report':data.user_report})
       }else{
         //should have error message
         console.log(data)
@@ -56,12 +56,12 @@ class App extends Component {
   };
 
   logout = () =>{
-    localStorage.removeItem('user_token')
+    localStorage.removeItem('')
     this.props.history.push('/');
   };
 
   render() {
-    const {username,user_report} = this.state;
+    const {username} = this.state;
     return (
       <div>
         <Header style={{backgroundColor: 'rgba(79, 134, 247, 0.0)'}}>
@@ -77,11 +77,11 @@ class App extends Component {
                 input features given by user. Secondly, we have factor vs popularity which shows data visualisation for 
                 how selected factors affects popularity. Both service are aim to help user make better decisions.
               </p><br/>
-              {
+              {/* {
                   user_report === ''
                   ? null
                   : <div><img src={user_report} alt='user report'/></div>
-              }
+              } */}
             </TabPane>
             <TabPane tab="prediction" key="2"><Prediction/></TabPane>
             <TabPane tab="Factors" key="3"><Factors/></TabPane>
