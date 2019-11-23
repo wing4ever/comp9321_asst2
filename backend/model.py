@@ -38,3 +38,15 @@ class Activity(db.Model):
             'visited-at': self.recorded_at.strftime("%Y-%m-%d %H:%M:%S")
         }
         return json.dumps(user_obj)
+
+    def log(account_id, url):
+        activity = Activity(account_id=account_id, service_route=url, recorded_at=datetime.now())
+        db.session.add(activity)
+        db.session.commit()
+
+    def get_all_activities(limit_num=50):
+        '''Logs of all activities'''
+        return [Activity.json_details(activity) for activity in Activity.query.limit(limit_num).all()]
+
+    def json_details(self):
+        return {'id': self.id, 'account_id': self.account_id, 'url-visited': self.service_route, 'visited-at': self.recorded_at.strftime("%Y-%m-%d %H:%M:%S")}
