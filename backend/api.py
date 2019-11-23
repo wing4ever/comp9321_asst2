@@ -238,7 +238,7 @@ class HomeFactor(Resource):
         graph_path = os.path.join(os.path.abspath(os.path.dirname(current_path) + '/importance'),  'importance.png')
         byteImageIO = BytesIO()
         byteImage = Image.open(graph_path)
-        byteImage.save(byteImageIO, 'PNG')
+        byteImage.save(byteImageIO, 'png')
         data = base64.encodebytes(byteImageIO.getvalue()).decode()
         
         resp = make_response(jsonify({'image' : data, 'status': 200}))
