@@ -4,6 +4,7 @@ from functools import wraps
 from time import time
 import jwt,datetime
 from flask import jsonify, request, make_response
+from .model import *
 
 class AuthenticationToken:
     def __init__(self, secret_key, expires_in):
@@ -11,10 +12,11 @@ class AuthenticationToken:
         self.expires_in = expires_in
         self.serializer = JSONWebSignatureSerializer(secret_key)
 
-    def generate_token(self, username):
+    def generate_token(self, user_id, username):
 
         info = {
             'username': username,
+            'id': user_id,
             'creation_time': time()
         }
 
@@ -27,7 +29,7 @@ class AuthenticationToken:
         if time() - info['creation_time'] > self.expires_in:
             raise SignatureExpired("The token has been expired, please get a new token")
 
-        return info['username']
+        return {'id': info['id'], 'username': info['username']}
     
 SECRET_KEY = "THIS IS SECRET YOU CAN NEVER GUSS WHAT AM I TALKING"
 expires_in = 6000
@@ -42,7 +44,8 @@ def requires_auth(f):
             return jsonify({'error': 'Authentication token is missing', 'status': 401})
 
         try:
-            user = auth_token.validate_token(token)
+            user_info = auth_token.validate_token(token)
+            Activity.log(user_info['id'], request.path)
         except SignatureExpired as e:
             return jsonify({'error':'token expired', 'status': 401})
         except BadSignature as e:

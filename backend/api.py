@@ -5,9 +5,10 @@ from flask_cors import cross_origin
 import joblib, pandas
 import matplotlib.pyplot as plt
 import base64
+from PIL import Image
 from io import BytesIO
 from . import db
-from .model import User
+from .model import User, Activity
 from .authentication_token import auth_token, requires_auth
 from .prediction import conbin_prediction
 from flask_restplus import Api, Resource, fields
@@ -24,6 +25,7 @@ restplus_api = Api(api,
                    },
                    title="Airbnb Home Popularity Prediction", # Documentation title
                    )
+
 login_api = restplus_api.namespace('login',
                                   description="Shows user authentication process"
                                   )
@@ -33,6 +35,10 @@ signup_api = restplus_api.namespace('signup',
 user_api = restplus_api.namespace('user',
                                   description="Shows user account information"
                                   )
+
+admin_api = restplus_api.namespace('admin',
+                                   description="Summary of service usage"
+                                   )
 
 home_api = restplus_api.namespace('home',
                                   description="Relationship between Airbnb Home features and popularity, & popularity prediction"
@@ -77,7 +83,7 @@ class UserLogin(Resource):
             resp = make_response(jsonify({'error':'Validation Failed', 'status': 400}))
             return resp
         else:
-            token = auth_token.generate_token(username)
+            token = auth_token.generate_token(user.id, user.username)
             resp = make_response(jsonify({'API_TOKEN':token, 'status': 201}))
             return resp
 
@@ -104,7 +110,7 @@ class UserSignup(Resource):
         db.session.add(new_user)
         db.session.commit()
 
-        token = auth_token.generate_token(username)
+        token = auth_token.generate_token(new_user.id, new_user.username)
         resp = make_response(jsonify({'API_TOKEN': token, 'status': 201}))
         return resp
 
@@ -117,8 +123,38 @@ class UserAccount(Resource):
     @requires_auth
     def get(self):
         token = request.headers.get('API_TOKEN')
-        user = auth_token.validate_token(token)
-        resp = make_response(jsonify({'username': str(user), 'image' : image_stream, 'status': 200}))
+        my_info = auth_token.validate_token(token)
+        my_username = str(my_info['username'])
+
+        resp = make_response(jsonify({'username': my_username, 'status': 200}))
+        return resp
+
+@restplus_api.route('/home/summary/')
+class ServiceUsageSummary(Resource):
+    @home_api.doc(security="TOKEN-BASED",
+                   description="Summary of frequency of service usage (Which service is more popular?)")
+    @cross_origin()
+    @requires_auth
+    def get(self):
+        data = Activity.get_service_usage_summary()
+        services, numbers = [], []
+        for service in data:
+            if 'prediction' in service['service-url']:
+                services.append('prediction')
+            elif 'factors' in service['service-url']:
+                services.append('factors')
+            elif 'summary' in service['service-url']:
+                services.append('summary')
+            numbers.append(service['visit-count'])
+        
+        plt.bar(services, numbers)
+        plt.title('API services usage statistics')
+        plt.xlabel('total counts')
+        sio = BytesIO()
+        plt.savefig(sio, format='png')
+        data = base64.encodebytes(sio.getvalue()).decode()
+
+        resp = make_response(jsonify({'image': data, 'status':200}))
         return resp
 
 # this part is used to provide the service of prediction
@@ -141,23 +177,23 @@ class HomePrediction(Resource):
         # below is input example WEISONG
         # ==============================
         # {
-        #     'log_price': 4.01063529409626,
-        #     'property_type':'House',
-        #     'room_type':'Entire home/apt',
-        #     'accommodates': 5,
-        #     'bathrooms': 3,
-        #     'bed_type': 'Real Bed',
-        #     'cancellation_policy':'moderate',
-        #     'cleaning_fee': 1,
-        #     'city': 'LA',
-        #     'host_has_profile_pic': 'f',
-        #     'host_identity_verified': 'f',
-        #     'host_response_rate': '50%',
-        #     'instant_bookable': 'f',
-        #     'number_of_reviews': 6,
-        #     'bedrooms': 1.0,
-        #     'beds': 1.0
-        # }
+        #     "log_price": 4.01063529409626,
+        #     "property_type":"House",
+        #     "room_type":"Entire home/apt",
+        #     "accommodates": 5,
+        #     "bathrooms": 3,
+        #     "bed_type": "Real Bed",
+        #     "cancellation_policy":"moderate",
+        #     "cleaning_fee": 1,
+        #     "city": "LA",
+        #     "host_has_profile_pic": "f",
+        #     "host_identity_verified": "f",
+        #     "host_response_rate": "50%",
+        #     "instant_bookable": "f",
+        #     "number_of_reviews": 6,
+        #     "bedrooms": 1.0,
+        #     "beds": 1.0
+        # }   
         # ===============================
 
         allFeatures = json.loads(request.get_data())
@@ -200,10 +236,10 @@ class HomeFactor(Resource):
     def get(self):
         current_path = os.path.abspath(__file__)
         graph_path = os.path.join(os.path.abspath(os.path.dirname(current_path) + '/importance'),  'importance.png')
-        image_stream = ''
-        with open(graph_path, 'r') as image_file:
-            image_stream = image_file.read()
-            image_stream = base64.b64encode(image_stream)
+        byteImageIO = BytesIO()
+        byteImage = Image.open(graph_path)
+        byteImage.save(byteImageIO, 'PNG')
+        data = base64.encodebytes(byteImageIO.getvalue()).decode()
         
-        resp = make_response(jsonify({'image' : image_stream, 'status': 200}))
+        resp = make_response(jsonify({'image' : data, 'status': 200}))
         return resp
