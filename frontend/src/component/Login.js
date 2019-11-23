@@ -48,7 +48,7 @@ class Login extends Component {
         }).then(response => {
             console.log(response)
             if (response.status===201){
-                localStorage.setItem('user_token',response.token);
+                localStorage.setItem('API_TOKEN',response.API_TOKEN);
                 message.success('login successed')
                 this.props.history.push('/');              
             }else if(response.status===400){
@@ -81,7 +81,7 @@ class Login extends Component {
         }).then(response => {
             console.log(response)
             if (response.status===201){
-                localStorage.setItem('user_token',response.token);
+                localStorage.setItem('API_TOKEN',response.API_TOKEN);
                 message.success('login successed')
                 this.props.history.push('/');              
             }else if(response.status===400){
