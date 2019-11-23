@@ -48,5 +48,44 @@ class Activity(db.Model):
         '''Logs of all activities'''
         return [Activity.json_details(activity) for activity in Activity.query.limit(limit_num).all()]
 
+    def get_service_usage_summary():
+        '''Overall Summary of Service Usage'''
+        user_services_counts = db.session. \
+            query(Activity.service_route, func.count(Activity.service_route)). \
+            group_by(Activity.service_route). \
+            all()
+        summary = []
+        for entry in user_services_counts:
+            summary.append({'service-url': entry[0], 'visit-count': entry[1]})
+
+        return summary
+
+    def get_activity_summary(_account_id):
+        '''Service Usage Summary of an account - for user'''
+        user_services_counts = db.session. \
+            query(Activity.service_route, func.count(Activity.account_id)). \
+            filter_by(account_id=_account_id). \
+            group_by(Activity.service_route). \
+            all()
+        summary = []
+        for entry in user_services_counts:
+            summary.append({'service-url': entry[0], 'visit-count': entry[1]})
+
+        return summary
+
+    def get_all_activities_summary(limit_num=50):
+        '''User-wise service usage summary - for admin'''
+        user_services_counts = db.session. \
+            query(Activity.account_id, Activity.service_route, func.count(Activity.account_id)). \
+            group_by(Activity.service_route, Activity.account_id). \
+            limit(limit_num). \
+            all()
+
+        summary = []
+        for entry in user_services_counts:
+            summary.append({'account_id': entry[0], 'service-url': entry[1], 'visit-count': entry[2]})
+
+        return summary
+
     def json_details(self):
         return {'id': self.id, 'account_id': self.account_id, 'url-visited': self.service_route, 'visited-at': self.recorded_at.strftime("%Y-%m-%d %H:%M:%S")}
