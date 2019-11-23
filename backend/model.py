@@ -5,12 +5,11 @@ from flask_login import UserMixin
 import json
 
 
-class User(UserMixin, db.Model):
-    __tablename__ = 'user'
+class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100), unique=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
     activities = db.relationship('Activity', backref='account', lazy=True)
 
     def get_user(_username):
