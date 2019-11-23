@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Select, Input, Button, Radio } from 'antd';
+import { Form, Select,Button,InputNumber,message} from 'antd';
 
 const { Option } = Select;
 
@@ -10,25 +10,38 @@ class Prediction extends Component {
     super(props);
 
     this.state = {
-        result : null
+        result : null,
+        property_type :[
+          'Bungalow', 'Casa particular', 'Dorm', 'Treehouse', 'Cave', 'House',
+          'Castle', 'Boutique hotel', 'Guest suite', 'Hostel', 'Lighthouse',
+          'Villa', 'Townhouse', 'Timeshare', 'Chalet', 'Parking Space', 'Tipi',
+          'Tent', 'Loft', 'Bed & Breakfast', 'Other', 'Earth House', 'Camper/RV',
+          'Boat', 'Serviced apartment', 'In-law', 'Yurt', 'Hut', 'Train', 'Vacation home',
+          'Condominium', 'Cabin', 'Guesthouse', 'Island', 'Apartment'
+        ],
+        room_type :['Private room', 'Entire home/apt', 'Shared room'],
+        bed_type :['Futon', 'Couch', 'Airbed', 'Real Bed', 'Pull-out Sofa' ],
+        cancellation_policy :['super_strict_30', 'super_strict_60', 'strict','moderate' , 'flexible' ],
+        city :['LA', 'NYC', 'Boston', 'DC', 'SF', 'Chicago' ],
     };
   }
   handleSubmit = e => {
     console.log("start");
-    console.log(localStorage.getItem('user_token'))
+    console.log(localStorage.getItem('API_TOKEN'))
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log(JSON.stringify(
           values
         ))
+        console.log(values);
         fetch('http://127.0.0.1:5000/home/prediction/', {
           method: 'POST',
           headers: {
             
             "Content-Type":"application/json",
             'Accept': 'application/json',
-            "user_token":localStorage.getItem('user_token'),
+            "API_TOKEN":localStorage.getItem('API_TOKEN'),
           },
           body: JSON.stringify(
             values
@@ -37,16 +50,24 @@ class Prediction extends Component {
         })
         .then(response => response.json())
         .then((response) =>{
-          console.log(this.state.user_token)
-          console.log(localStorage.getItem('user_token'))
-          console.log(response)
-          this.setState({result: response.prediction_result})
+          if (response.status === 201){
+            console.log(this.state.API_TOKEN)
+            console.log(localStorage.getItem('API_TOKEN'))
+            console.log(response)
+            this.setState({result: response.prediction_result})
+          }else if(response.status===400){
+                message.error(response.error)
+            }else{
+                message.error('not responding properly')
+            }
+          
         })
       }
     });
   };
 
   render() {
+    const {property_type,room_type,bed_type,cancellation_policy,city} = this.state
     const { getFieldDecorator } = this.props.form;
     if (this.state.result != null){
       this.content = <h3>popularity: {this.state.result} </h3>
@@ -56,174 +77,120 @@ class Prediction extends Component {
     return (
       <div>
       <Form labelCol={{ span: 2 }} wrapperCol={{ span: 6 }} onSubmit={this.handleSubmit}>
-        <Form.Item label="log_price">
-          {getFieldDecorator('log_price', {
-            rules: [{ required: true, message: 'Please input your log_price!' }],
-          })(<Input />)}
-        </Form.Item>
-        <Form.Item label="property_type">
+        {getFieldDecorator('log_price', {
+              initialValue: 4.03123423
+            })}
+        {/* <Col offset={6}> */}
+        <Form.Item label="Property Type" labelCol = {{span:5} } labelAlign = 'left'>
           {getFieldDecorator('property_type', {
-            rules: [{ required: false, message: 'Please select your property_type!' }],
+            rules: [{ required: true, message: 'Please select your property type!' }],
           })(
             <Select
-              placeholder="Select a property_type "
+              placeholder="Select a property type "
             >
-              <Option value="1">  Loft    </Option>
-              <Option value="2">  House   </Option>
-              <Option value="3"> Apartment</Option>
-              <Option value="4">Condominium</Option>
+              {property_type.map(item => (
+                            <Option value={item}>{item}</Option>
+              ))}
             </Select>,
           )}
         </Form.Item>
-        <Form.Item label="cancellation_policy">
-          {getFieldDecorator('cancellation_policy', {
-            rules: [{ required: false, message: 'Please select your cancellation_policy!' }],
-          })(
-            <Select
-              placeholder="Select a cancellation_policy "
-            >
-              <Option value="1">  strict   </Option>
-              <Option value="2">  flexible   </Option>
-              <Option value="3"> moderate</Option>
-            </Select>,
-          )}
-        </Form.Item>
-        <Form.Item label="accommodates">
-          {getFieldDecorator('accommodates', {
-            rules: [{ required: false, message: 'Please select your accommodates!' }],
-          })(
-            <Select
-              placeholder="Select a cancellation_policy "
-            >
-              <Option value="1">  1   </Option>
-              <Option value="2">  2   </Option>
-              <Option value="3"> 3</Option>
-              <Option value="4">4 </Option>
-            </Select>,
-          )}
-        </Form.Item>
-        <Form.Item label="bathrooms">
-          {getFieldDecorator('bathrooms', {
-            rules: [{ required: false, message: 'Please select your bathrooms!' }],
-          })(
-            <Select
-              placeholder="Select a bathrooms "
-            >
-              <Option value="1">  1   </Option>
-              <Option value="2">  2   </Option>
-              <Option value="3"> 3</Option>
-            </Select>,
-          )}
-        </Form.Item>
-        <Form.Item label="host_response_rate">
-          {getFieldDecorator('host_response_rate', {
-            rules: [{ required: false, message: 'Please select your host_response_rate!' }],
-          })(
-            <Select
-              placeholder="Select a host_response_rate "
-            >
-              <Option value="1">  50%   </Option>
-              <Option value="2">  75%   </Option>
-              <Option value="3"> 100%</Option>
-            </Select>,
-          )}
-        </Form.Item>
-        <Form.Item label="number_of_reviews">
-          {getFieldDecorator('number_of_reviews', {
-            rules: [{ required: false, message: 'Please select your number_of_reviews!' }],
-          })(
-            <Select
-              placeholder="Select a number_of_reviews "
-            >
-              <Option value="1">  10   </Option>
-              <Option value="2">  50   </Option>
-              <Option value="3"> 100 </Option>
-            </Select>,
-          )}
-        </Form.Item>
-        <Form.Item label="bedrooms">
-          {getFieldDecorator('bedrooms', {
-            rules: [{ required: false, message: 'Please select your bedrooms!' }],
-          })(
-            <Select
-              placeholder="Select a bedrooms "
-            >
-              <Option value="1">  1   </Option>
-              <Option value="2">  2   </Option>
-              <Option value="3"> 3 </Option>
-            </Select>,
-          )}
-        </Form.Item>
-        <Form.Item label="beds">
-          {getFieldDecorator('beds', {
-            rules: [{ required: false, message: 'Please select your beds!' }],
-          })(
-            <Select
-              placeholder="Select a beds "
-            >
-              <Option value="1">  1   </Option>
-              <Option value="2">  2   </Option>
-              <Option value="3"> 3 </Option>
-            </Select>,
-          )}
-        </Form.Item>
-        <Form.Item label="bed_type">
-          {getFieldDecorator('bed_type', {
-            rules: [{ required: false, message: 'Please select your bed_type!' }],
-          })(
-            <div>
-            <Radio.Group defaultValue="a" buttonStyle="solid" >
-              <Radio.Button value="1">RealBed</Radio.Button>
-              <Radio.Button value="2">Futon</Radio.Button>
-            </Radio.Group>
-             </div>
-          )}
-        </Form.Item>
-        <Form.Item label="room_type">
+        {/* </Col> */}
+        <Form.Item label="Room Type" labelCol = {{span:5} } labelAlign = 'left'>
           {getFieldDecorator('room_type', {
-            rules: [{ required: false, message: 'Please select your room_type!' }],
+            rules: [{ required: true, message: 'Please select your room type!' }],
           })(
-            <div>
-            <Radio.Group defaultValue="a" buttonStyle="solid" >
-              <Radio.Button value="1">Entire home/apt</Radio.Button>
-              <Radio.Button value="2">Private room</Radio.Button>
-            </Radio.Group>
-             </div>
+            <Select
+              placeholder="Select a room type "
+            >
+              {room_type.map(item => (
+                            <Option value={item}>{item}</Option>
+              ))}
+            </Select>,
           )}
         </Form.Item>
-        <Form.Item label="cleaning_fee">
-          {getFieldDecorator('cleaning_fee', {
-            rules: [{ required: false, message: 'Please select your cleaning_fee!' }],
+        {getFieldDecorator('accommodates', {
+              initialValue: 4
+            })}
+        {getFieldDecorator('bathrooms', {
+              initialValue: 2
+            })}
+        <Form.Item label="Bed Type" labelCol = {{span:5} } labelAlign = 'left'>
+          {getFieldDecorator('bed_type', {
+            rules: [{ required: true, message: 'Please select your bed type!' }],
           })(
-            <div>
-            <Radio.Group defaultValue="a" buttonStyle="solid" >
-              <Radio.Button value="1">TRUE</Radio.Button>
-              <Radio.Button value="2">FALSE</Radio.Button>
-            </Radio.Group>
-             </div>
+            <Select
+              placeholder="Select a bed type "
+            >
+              {bed_type.map(item => (
+                            <Option value={item}>{item}</Option>
+              ))}
+            </Select>,
           )}
         </Form.Item>
-        <Form.Item label="instant_bookable">
-          {getFieldDecorator('instant_bookable', {
-            rules: [{ required: false, message: 'Please select your instant_bookable!' }],
+        <Form.Item label="Cancellation Policy" labelCol = {{span:5} } labelAlign = 'left'>
+          {getFieldDecorator('cancellation_policy', {
+            rules: [{ required: true, message: 'Please select your cancellation policy!' }],
           })(
-            <div>
-            <Radio.Group defaultValue="a" buttonStyle="solid" >
-              <Radio.Button value="1">TRUE</Radio.Button>
-              <Radio.Button value="2">FALSE</Radio.Button>
-            </Radio.Group>
-             </div>
+            <Select
+              placeholder="Select a cancellation policy "
+            >
+              {cancellation_policy.map(item => (
+                            <Option value={item}>{item}</Option>
+              ))}
+            </Select>,
           )}
         </Form.Item>
+        {getFieldDecorator('cleaning_fee', {
+              initialValue: 1
+            })}
+        <Form.Item label="City" labelCol = {{span:5} } labelAlign = 'left'>
+          {getFieldDecorator('city', {
+            rules: [{ required: true, message: 'Please select your city!' }],
+          })(
+            <Select
+              placeholder="Select your city "
+            >
+              {city.map(item => (
+                            <Option value={item}>{item}</Option>
+              ))}
+            </Select>,
+          )}
+        </Form.Item>
+        {getFieldDecorator('host_has_profile_pic', {
+              initialValue: 'f'
+            })}
+        {getFieldDecorator('host_identity_verified', {
+              initialValue: 'f'
+            })}
+        <Form.Item label="Host Response Rate(%)" labelCol = {{span:5} } labelAlign = 'left'>
+          {getFieldDecorator('host_response_rate', {
+            rules: [{pattern: /^[0-9]+$/,message: 'Please input positive integer'},{ required: true, message: 'Please input your host response rate!' }],
+          })(<InputNumber min={0} max={100}/>)}
+        </Form.Item>
+        {getFieldDecorator('instant_bookable', {
+              initialValue: 'f'
+            })}
+        <Form.Item label="Number Of Reviews" labelCol = {{span:5} } labelAlign = 'left'>
+          {getFieldDecorator('number_of_reviews', {
+            rules: [ {pattern: /^[0-9]+$/,message: 'Please input positive integer'},{ required: true,message: 'Please input the number of reviews!' }],
+          })(<InputNumber min={0}/>)}
+        </Form.Item>
+        <Form.Item label="Number of Bedrooms" labelCol = {{span:5} } labelAlign = 'left'>
+          {getFieldDecorator('bedrooms', {
+            rules: [ {pattern: /^[0-9]+$/,message: 'Please input positive integer'},{ required: true, message: 'Please input the number of bedrooms!' }],
+          })(<InputNumber min={0}/>)}
+        </Form.Item>
+        {getFieldDecorator('beds', {
+              initialValue: 2
+            })}
         <Form.Item wrapperCol={{ span: 12, offset: 4 }}>
           <Button type="primary" htmlType="submit">
             Submit
           </Button>
         </Form.Item>
-        <div>
-        
-        </div>
       </Form> 
+      
+
       {this.content}
       </div>      
     );
