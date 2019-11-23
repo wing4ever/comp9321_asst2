@@ -5,7 +5,7 @@ import joblib, pandas
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
-from .model import User
+from .model import User, Activity
 from .authentication_token import auth_token, requires_auth
 from flask_restplus import Api, Resource, fields
 import json
@@ -28,6 +28,10 @@ login_api = restplus_api.namespace('login',
 user_api = restplus_api.namespace('user',
                                   description="User registration, and user account information"
                                   )
+
+admin_api = restplus_api.namespace('admin',
+                                   description="Summary of service usage"
+                                   )
 
 home_api = restplus_api.namespace('home',
                                   security="TOKEN-BASED",
@@ -82,15 +86,6 @@ class UserLogin(Resource):
 # basic info + statistical info
 @user_api.route('/')
 class UserAccount(Resource):
-    @requires_auth
-    @user_api.doc(security="TOKEN-BASED", description="Get information of current user account")
-    @cross_origin()
-    def get(self):
-        token = request.headers.get('API-TOKEN')
-        user = auth_token.validate_token(token)
-        resp = make_response(jsonify({'username': str(user), 'status': 200}))
-        return resp
-
     @user_api.doc(description="Register new user account")
     @user_api.expect(user_login_model)
     @cross_origin()
@@ -116,6 +111,45 @@ class UserAccount(Resource):
         token = auth_token.generate_token(new_user.id, new_user.username)
         resp = make_response(jsonify({'token': token, 'status': 201}))
         return resp
+
+    @requires_auth
+    @user_api.doc(security="TOKEN-BASED", description="Get information of current user account and activities")
+    @cross_origin()
+    def get(self):
+        token = request.headers.get('API-TOKEN')
+        my_info = auth_token.validate_token(token)
+        my_username = str(my_info['username'])
+        my_user_obj = User.get_user(my_username)
+        my_activities = Activity.get_activity_summary(my_user_obj.id)
+        resp = make_response(jsonify({'username': my_username, 'activities': my_activities, 'status': 200}))
+        return resp
+
+
+@admin_api.route('/service-usage/summary/')
+class ServiceUsageSummary(Resource):
+    @requires_auth
+    @admin_api.doc(security="TOKEN-BASED",
+                   description="Summary of frequency of service usage (Which service is more popular?)")
+    def get(self):
+        return Activity.get_service_usage_summary()
+
+@admin_api.route('/users-activities/summary/')
+class UsersActivitiesSummary(Resource):
+    @requires_auth
+    @admin_api.doc(security="TOKEN-BASED",
+                   description="Summary of user-service interaction")
+    def get(self):
+        return Activity.get_all_activities_summary()
+
+@admin_api.route('/users-activities/')
+class ActivitiesLog(Resource):
+    @requires_auth
+    @admin_api.doc(security="TOKEN-BASED",
+                   description="All Users Activities Log: Lists all users-interactions with the services")
+    def get(self):
+        return Activity.get_all_activities()
+
+
 
 # this part is used to provide the service of prediction
 # totally speaking, there are two methods one is GET which
