@@ -73,8 +73,8 @@ class UserLogin(Resource):
             resp = make_response(jsonify({'error':'Validation Failed', 'status': 400}))
             return resp
         else:
-            token = auth_token.generate_token(username)
-            resp = make_response(jsonify({'token':token, 'status': 201}))
+            token = auth_token.generate_token(user.id, user.username)
+            resp = make_response(jsonify({'token': token, 'status': 201}))
             return resp
 
 
@@ -113,7 +113,7 @@ class UserAccount(Resource):
         db.session.add(new_user)
         db.session.commit()
 
-        token = auth_token.generate_token(username)
+        token = auth_token.generate_token(new_user.id, new_user.username)
         resp = make_response(jsonify({'token': token, 'status': 201}))
         return resp
 

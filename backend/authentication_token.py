@@ -11,10 +11,11 @@ class AuthenticationToken:
         self.expires_in = expires_in
         self.serializer = JSONWebSignatureSerializer(secret_key)
 
-    def generate_token(self, username):
+    def generate_token(self, user_id, username):
 
         info = {
             'username': username,
+            'id': user_id,
             'creation_time': time()
         }
 
@@ -27,8 +28,8 @@ class AuthenticationToken:
         if time() - info['creation_time'] > self.expires_in:
             raise SignatureExpired("The token has been expired, please get a new token")
 
-        return info['username']
-    
+        return {'id': info['id'], 'username': info['username']}
+
 SECRET_KEY = "THIS IS SECRET YOU CAN NEVER GUSS WHAT AM I TALKING"
 expires_in = 6000
 auth_token = AuthenticationToken(SECRET_KEY, expires_in)
