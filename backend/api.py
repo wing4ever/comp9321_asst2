@@ -78,7 +78,7 @@ class UserLogin(Resource):
             return resp
         else:
             token = auth_token.generate_token(username)
-            resp = make_response(jsonify({'API-TOKEN':token, 'status': 201}))
+            resp = make_response(jsonify({'API_TOKEN':token, 'status': 201}))
             return resp
 
 @restplus_api.route('/signup/')
@@ -105,7 +105,7 @@ class UserSignup(Resource):
         db.session.commit()
 
         token = auth_token.generate_token(username)
-        resp = make_response(jsonify({'API-TOKEN': token, 'status': 201}))
+        resp = make_response(jsonify({'API_TOKEN': token, 'status': 201}))
         return resp
 
 # show the info of the current user
@@ -116,7 +116,7 @@ class UserAccount(Resource):
     @cross_origin()
     @requires_auth
     def get(self):
-        token = request.headers.get('API-TOKEN')
+        token = request.headers.get('API_TOKEN')
         user = auth_token.validate_token(token)
         resp = make_response(jsonify({'username': str(user), 'image' : image_stream, 'status': 200}))
         return resp
