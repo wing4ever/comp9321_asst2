@@ -1,7 +1,6 @@
 from datetime import datetime
 from sqlalchemy import func
 from . import db
-from flask_login import UserMixin
 import json
 
 
