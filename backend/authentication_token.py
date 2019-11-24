@@ -3,7 +3,7 @@ from flask_restplus import abort
 from functools import wraps
 from time import time
 import jwt,datetime
-from flask import jsonify, request, make_response
+from flask import jsonify, request, g, make_response
 from .model import *
 
 class AuthenticationToken:
@@ -22,7 +22,7 @@ class AuthenticationToken:
 
         token = self.serializer.dumps(info)
         return token.decode()
-    
+
     def validate_token(self, token):
         info = self.serializer.loads(token.encode())
 
@@ -30,7 +30,8 @@ class AuthenticationToken:
             raise SignatureExpired("The token has been expired, please get a new token")
 
         return {'id': info['id'], 'username': info['username']}
-    
+
+
 SECRET_KEY = "THIS IS SECRET YOU CAN NEVER GUSS WHAT AM I TALKING"
 expires_in = 6000
 auth_token = AuthenticationToken(SECRET_KEY, expires_in)
@@ -38,19 +39,26 @@ auth_token = AuthenticationToken(SECRET_KEY, expires_in)
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-
-        token = request.headers.get('API_TOKEN')
+        token = request.headers.get('API-TOKEN')
         if not token:
             return jsonify({'error': 'Authentication token is missing', 'status': 401})
-
         try:
-            user_info = auth_token.validate_token(token)
-            Activity.log(user_info['id'], request.path)
+            user = auth_token.validate_token(token)
+            g.user = User.get_user(user['username'])
+            Activity.log(user['id'], request.path)
         except SignatureExpired as e:
-            return jsonify({'error':'token expired', 'status': 401})
+            return jsonify({'error': 'token expired', 'status': 401})
         except BadSignature as e:
-            return jsonify({'error':'invalid token', 'status': 401})
+            return jsonify({'error': 'invalid token', 'status': 401})
+        return f(*args, **kwargs)
 
+    return decorated
+
+def requires_admin(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not g.user.is_admin:
+            return jsonify({'error': 'Your are not authorized to access this resource. Please contact administrator.', 'status': 403})
         return f(*args, **kwargs)
 
     return decorated
