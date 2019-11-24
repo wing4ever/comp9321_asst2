@@ -9,6 +9,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
     activities = db.relationship('Activity', backref='account', lazy=True)
 
     def get_user(_username):
@@ -45,12 +46,10 @@ class Activity(db.Model):
 
     def get_all_activities(limit_num=50):
         '''Logs of all activities'''
-
         return [Activity.json_details(activity) for activity in Activity.query.limit(limit_num).all()]
 
     def get_service_usage_summary():
         '''Overall Summary of Service Usage'''
-
         user_services_counts = db.session. \
             query(Activity.service_route, func.count(Activity.service_route)). \
             group_by(Activity.service_route). \
@@ -63,7 +62,6 @@ class Activity(db.Model):
 
     def get_activity_summary(_account_id):
         '''Service Usage Summary of an account - for user'''
-
         user_services_counts = db.session. \
             query(Activity.service_route, func.count(Activity.account_id)). \
             filter_by(account_id=_account_id). \
@@ -77,7 +75,6 @@ class Activity(db.Model):
 
     def get_all_activities_summary(limit_num=50):
         '''User-wise service usage summary - for admin'''
-
         user_services_counts = db.session. \
             query(Activity.account_id, Activity.service_route, func.count(Activity.account_id)). \
             group_by(Activity.service_route, Activity.account_id). \
