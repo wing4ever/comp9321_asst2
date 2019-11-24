@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
 from .model import User, Activity
-from .authentication_token import auth_token, requires_auth
+from .authentication_token import auth_token, requires_auth, requires_admin
 from flask_restplus import Api, Resource, fields
 import json
 from . import db
@@ -30,6 +30,10 @@ user_api = restplus_api.namespace('user',
                                   )
 
 admin_api = restplus_api.namespace('admin',
+                                   description="Admin Interface for Service Usage information"
+                                   )
+
+summary_api = restplus_api.namespace('summary',
                                    description="Summary of service usage"
                                    )
 
@@ -125,7 +129,7 @@ class UserAccount(Resource):
         return resp
 
 
-@admin_api.route('/service-usage/summary/')
+@summary_api.route('/service-usage/')
 class ServiceUsageSummary(Resource):
     @requires_auth
     @admin_api.doc(security="TOKEN-BASED",
@@ -136,6 +140,7 @@ class ServiceUsageSummary(Resource):
 @admin_api.route('/users-activities/summary/')
 class UsersActivitiesSummary(Resource):
     @requires_auth
+    @requires_admin
     @admin_api.doc(security="TOKEN-BASED",
                    description="Summary of user-service interaction")
     def get(self):
@@ -144,6 +149,7 @@ class UsersActivitiesSummary(Resource):
 @admin_api.route('/users-activities/')
 class ActivitiesLog(Resource):
     @requires_auth
+    @requires_admin
     @admin_api.doc(security="TOKEN-BASED",
                    description="All Users Activities Log: Lists all users-interactions with the services")
     def get(self):
