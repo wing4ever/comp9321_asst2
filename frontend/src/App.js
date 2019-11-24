@@ -57,7 +57,7 @@ class App extends Component {
   };
 
   logout = () =>{
-    localStorage.removeItem('')
+    localStorage.removeItem('API_TOKEN')
     this.props.history.push('/');
   };
 
