@@ -137,19 +137,17 @@ class ServiceUsageSummary(Resource):
     @requires_auth
     def get(self):
         data = Activity.get_service_usage_summary()
-        services, numbers = [], []
+        services, numbers = ['prediction', 'factors', 'summary'], [0, 0, 0]
         for service in data:
             if 'prediction' in service['service-url']:
-                services.append('prediction')
+                numbers[0] = service['visit-count']
             elif 'factors' in service['service-url']:
-                services.append('factors')
+                numbers[1] = service['visit-count']
             elif 'summary' in service['service-url']:
-                services.append('summary')
-            numbers.append(service['visit-count'])
-        
+                numbers[2] = service['visit-count']
+
         plt.bar(services, numbers)
         plt.title('API services usage statistics')
-        plt.xlabel('total counts')
         sio = BytesIO()
         plt.savefig(sio, format='png')
         data = base64.encodebytes(sio.getvalue()).decode()
