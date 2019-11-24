@@ -3,6 +3,33 @@
     "basePath": "/",
     "paths": {
         "/home/factors/": {
+            "post": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "description": "Get relationship of any feature with its popularity",
+                "operationId": "post_home_factor",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/HomeFactor"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "TOKEN-BASED": []
+                    }
+                ],
+                "tags": [
+                    "default"
+                ]
+            },
             "get": {
                 "responses": {
                     "200": {
@@ -16,18 +43,6 @@
                         "TOKEN-BASED": []
                     }
                 ],
-                "tags": [
-                    "default"
-                ]
-            },
-            "post": {
-                "responses": {
-                    "200": {
-                        "description": "Success"
-                    }
-                },
-                "description": "Get relationship of any feature with its popularity",
-                "operationId": "post_home_factor",
                 "tags": [
                     "default"
                 ]
@@ -48,7 +63,7 @@
                         "required": true,
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/Home"
+                            "$ref": "#/definitions/HomePrediction"
                         }
                     }
                 ],
@@ -184,7 +199,7 @@
             },
             "type": "object"
         },
-        "Home": {
+        "HomePrediction": {
             "properties": {
                 "log_price": {
                     "type": "number"
@@ -233,6 +248,17 @@
                 },
                 "beds": {
                     "type": "number"
+                }
+            },
+            "type": "object"
+        },
+        "HomeFactor": {
+            "properties": {
+                "factor": {
+                    "type": "string"
+                },
+                "AUTH_TOKEN": {
+                    "type": "string"
                 }
             },
             "type": "object"
