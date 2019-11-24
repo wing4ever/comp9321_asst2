@@ -2,6 +2,7 @@ import React, { Component} from 'react';
 import {Tabs,Layout, Button,message} from "antd";
 import Factors from './component/Factors'
 import Prediction from './component/Prediction'
+import Summary from './component/Summary'
 
 const { Header, Content, Footer} = Layout;
 
@@ -83,8 +84,9 @@ class App extends Component {
                   : <div><img src={user_report} alt='user report'/></div>
               } */}
             </TabPane>
-            <TabPane tab="prediction" key="2"><Prediction/></TabPane>
+            <TabPane tab="Prediction" key="2"><Prediction/></TabPane>
             <TabPane tab="Factors" key="3"><Factors/></TabPane>
+            <TabPane tab="Usage Info" key="4"><Summary/></TabPane>
           </Tabs>
         </Content>
         <Footer style={{ position: 'fixed', width: '100%', backgroundColor: 'rgba(79, 134, 247, 0.0)' }}>
