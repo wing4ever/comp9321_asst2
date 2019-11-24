@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Select,Button,InputNumber,message} from 'antd';
+import { Form, Select,Button,InputNumber,message,Row, Col } from 'antd';
 
 const { Option } = Select;
 
@@ -179,19 +179,28 @@ class Prediction extends Component {
           {getFieldDecorator('bedrooms', {
             rules: [ {pattern: /^[0-9]+$/,message: 'Please input positive integer'},{ required: true, message: 'Please input the number of bedrooms!' }],
           })(<InputNumber min={0}/>)}
-        </Form.Item>
+        </Form.Item >
         {getFieldDecorator('beds', {
               initialValue: 2
             })}
-        <Form.Item wrapperCol={{ span: 12, offset: 4 }}>
+          <Row >
+          <Col xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}>
+          <Form.Item >
           <Button type="primary" htmlType="submit">
             Submit
           </Button>
-        </Form.Item>
+          </Form.Item>
+          </Col>
+          <Col xs={{ span: 11, offset: 1 }} lg={{ span: 6, offset: 2 }}>
+          {this.content}
+          </Col>
+          
+          </Row>
+        
       </Form> 
       
 
-      {this.content}
+      
       </div>      
     );
   }
