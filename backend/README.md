@@ -11,7 +11,7 @@ Step 2
 
     python3  
     
-    from rest import db, create_app  
+    from backend import db, create_app  
     
     db.create_all(app=create_app())  
     
@@ -19,7 +19,7 @@ Step 2
     
 Step 3  
 
-    export FLASK_APP=backend-select  
+    export FLASK_APP=backend  
     
     export FLASK_ENV=development  
     
