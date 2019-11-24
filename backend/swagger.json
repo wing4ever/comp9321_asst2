@@ -1,0 +1,249 @@
+{
+    "swagger": "2.0",
+    "basePath": "/",
+    "paths": {
+        "/home/factors/": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "description": "Get top eight features that affect popularity",
+                "operationId": "get_home_factor",
+                "security": [
+                    {
+                        "TOKEN-BASED": []
+                    }
+                ],
+                "tags": [
+                    "default"
+                ]
+            },
+            "post": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "description": "Get relationship of any feature with its popularity",
+                "operationId": "post_home_factor",
+                "tags": [
+                    "default"
+                ]
+            }
+        },
+        "/home/prediction/": {
+            "post": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "description": "Get Prediction of popularity of the house base on its features",
+                "operationId": "post_home_prediction",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Home"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "TOKEN-BASED": []
+                    }
+                ],
+                "tags": [
+                    "default"
+                ]
+            }
+        },
+        "/home/summary/": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "description": "Summary of frequency of service usage (Which service is more popular?)",
+                "operationId": "get_service_usage_summary",
+                "security": [
+                    {
+                        "TOKEN-BASED": []
+                    }
+                ],
+                "tags": [
+                    "default"
+                ]
+            }
+        },
+        "/home/user/": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "description": "Get information of current user account",
+                "operationId": "get_user_account",
+                "security": [
+                    {
+                        "TOKEN-BASED": []
+                    }
+                ],
+                "tags": [
+                    "default"
+                ]
+            }
+        },
+        "/login/": {
+            "post": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "description": "Login in to the API with username & password to receive API token",
+                "operationId": "post_user_login",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "tags": [
+                    "default"
+                ]
+            }
+        },
+        "/signup/": {
+            "post": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "description": "Sign in to the API with username & password to receive API token",
+                "operationId": "post_user_signup",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "tags": [
+                    "default"
+                ]
+            }
+        }
+    },
+    "info": {
+        "title": "Airbnb Home Popularity Prediction",
+        "version": "1.0"
+    },
+    "produces": [
+        "application/json"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "securityDefinitions": {
+        "TOKEN-BASED": {
+            "type": "apiKey",
+            "name": "API-TOKEN",
+            "in": "header"
+        }
+    },
+    "tags": [
+        {
+            "name": "default",
+            "description": "Default namespace"
+        }
+    ],
+    "definitions": {
+        "User": {
+            "properties": {
+                "username": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "Home": {
+            "properties": {
+                "log_price": {
+                    "type": "number"
+                },
+                "property_type": {
+                    "type": "string"
+                },
+                "room_type": {
+                    "type": "string"
+                },
+                "accommodates": {
+                    "type": "integer"
+                },
+                "bathrooms": {
+                    "type": "integer"
+                },
+                "bed_type": {
+                    "type": "string"
+                },
+                "cancellation_policy": {
+                    "type": "string"
+                },
+                "cleaning_fee": {
+                    "type": "integer"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "host_has_profile_pic": {
+                    "type": "string"
+                },
+                "host_identity_verified": {
+                    "type": "string"
+                },
+                "host_response_rate": {
+                    "type": "string"
+                },
+                "instant_bookable": {
+                    "type": "string"
+                },
+                "number_of_reviews": {
+                    "type": "integer"
+                },
+                "bedrooms": {
+                    "type": "number"
+                },
+                "beds": {
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "responses": {
+        "ParseError": {
+            "description": "When a mask can't be parsed"
+        },
+        "MaskError": {
+            "description": "When any error occurs on mask"
+        }
+    }
+}
