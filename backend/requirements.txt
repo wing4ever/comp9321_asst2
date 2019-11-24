@@ -6,6 +6,5 @@ flask_restplus==0.13.0
 flask_marshmallow==0.10.1
 numpy==1.16.2
 scikit_learn==0.21.3
-
-pytorch == 1.2.0
+torch == 1.2.0
 xgboost == 0.90
