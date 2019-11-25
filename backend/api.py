@@ -40,8 +40,11 @@ admin_api = restplus_api.namespace('admin',
                                    description="Summary of service usage"
                                    )
 
-home_api = restplus_api.namespace('home',
-                                  description="Relationship between Airbnb Home features and popularity, & popularity prediction"
+home_api = restplus_api.namespace('home/prediction',
+                                  description="Predict Airbnb Home popularity"
+                                  )
+home_factor_api = restplus_api.namespace('home/factors',
+                                  description="Relationship between Airbnb Home features and popularity"
                                   )
 
 user_login_model = user_api.model('User', {
@@ -49,7 +52,7 @@ user_login_model = user_api.model('User', {
     'password': fields.String
 })
 
-home_prediction_model = home_api.model('Home', {
+home_prediction_model = home_api.model('HomePrediction', {
     'log_price': fields.Float,
     'property_type': fields.String,
     'room_type': fields.String,
@@ -66,6 +69,11 @@ home_prediction_model = home_api.model('Home', {
     'number_of_reviews': fields.Integer,
     'bedrooms': fields.Float,
     'beds': fields.Float
+})
+
+home_factor_model = home_factor_api.model('HomeFactor', {
+    "factor": fields.String,
+    "AUTH_TOKEN": fields.String
 })
 
 @restplus_api.route('/login/')
@@ -201,7 +209,8 @@ class HomePrediction(Resource):
 
 @restplus_api.route('/home/factors/')
 class HomeFactor(Resource):
-    @home_api.doc(description="Get relationship of any feature with its popularity")
+    @home_factor_api.doc(security="TOKEN-BASED", description="Get relationship of any feature with its popularity")
+    @home_factor_api.expect(home_factor_model)
     @cross_origin()
     @requires_auth
     def post(self):
@@ -228,7 +237,7 @@ class HomeFactor(Resource):
         resp = make_response(jsonify({'image':data, 'status':201}))
         return resp
     
-    @home_api.doc(security="TOKEN-BASED", description="Get top eight features that affect popularity")
+    @home_factor_api.doc(security="TOKEN-BASED", description="Get top eight features that affect popularity")
     @cross_origin()
     @requires_auth
     def get(self):
