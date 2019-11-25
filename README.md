@@ -6,6 +6,6 @@ We mainly provide 2 services to help hosts to make decisions. Firstly, we have p
 # Deployment
 About the details of installation, you can check folder backend and frontend README.md.
 
-# dataset
-check this link and download the train.csv,which is the dataset we use for this project and then put train.csv under backend/dataset.  
+# Dataset
+Please check this link and download the train.csv,which is the dataset we use for this project and then put train.csv under /backend/dataset.  
 https://www.kaggle.com/rudymizrahi/airbnb-listings-in-major-us-cities-deloitte-ml
