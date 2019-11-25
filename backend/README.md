@@ -12,7 +12,7 @@ For backend you need run following commands in the root directory:
 
 
 * Step 1: Install python packages (in the terminal)
-
+Navigate to backend folder (`cd backend`) and run the following command
 ```
 pip3 install -r requirements.txt
 ```
@@ -22,7 +22,7 @@ pip3 install -r requirements.txt
 
 Run python interpreter:
 `python3` or `python`
-
+From the project root folder, run the following command (in python interpreter)
 ```python
 # in python interpreter,
 from backend import db, create_app
@@ -33,10 +33,12 @@ db.create_all(app=create_app()
 exit()  
 ```
 
-* Step 3: Run the application (in the terminal)
-
+* Step 3: Run the application 
+From the project root folder run the following command (in the terminal) 
 ```
 export FLASK_APP=backend
 export FLASK_ENV=development
 flask run
 ```
+
+Flask application should be running in port 5000: Visit `http://localhost:5000/` for swagger doc.
