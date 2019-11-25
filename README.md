@@ -1,27 +1,11 @@
-# Overview
-There are totally three services, one is about useage statistics one is about prediction according to features that user input and last one is about the relationship which user want to observe and the important elements that can affect popularity significantly.
-# Insatllation
-For backend you need do in the root directory:  
+# Introduction to Blueberry AirBnB analytic tool
 
-Step 1  
+Our service help AirBnB hosts in major U.S. cities to analyse the populatity of their property.
+We mainly provide 2 services to help hosts to make decisions. Firstly, we have perdiciton basing on input features given by user. Secondly, we have factor vs popularity which shows data visualisation for how selected factors affects popularity. Both service are aim to help user make better decisions
 
-    pip3 install -r requirements.txt  
-    
-Step 2  
+# Deployment
+About the details of installation, you can check folder backend and frontend README.md.
 
-    python3  
-    
-    from rest import db, create_app  
-    
-    db.create_all(app=create_app())  
-    
-    exit()  
-    
-Step 3  
-
-    export FLASK_APP=backend-select  
-    
-    export FLASK_ENV=development  
-    
-    flask run  
-    
+# Dataset
+Please check this link and download the train.csv,which is the dataset we use for this project and then put train.csv under /backend/dataset.  
+https://www.kaggle.com/rudymizrahi/airbnb-listings-in-major-us-cities-deloitte-ml
