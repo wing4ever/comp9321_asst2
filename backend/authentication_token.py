@@ -2,7 +2,7 @@ from itsdangerous import SignatureExpired, JSONWebSignatureSerializer, BadSignat
 from flask_restplus import abort
 from functools import wraps
 from time import time
-import jwt,datetime
+import datetime
 from flask import jsonify, request, make_response
 from .model import *
 
