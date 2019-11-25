@@ -2,6 +2,8 @@ from flask import Blueprint, make_response, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import cross_origin
 import joblib, pandas
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import base64
 from PIL import Image
