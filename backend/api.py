@@ -159,6 +159,7 @@ class ServiceUsageSummary(Resource):
         plt.title('API services usage statistics')
         sio = BytesIO()
         plt.savefig(sio, format='png')
+        plt.close()
         data = base64.encodebytes(sio.getvalue()).decode()
 
         resp = make_response(jsonify({'image': data, 'status':200}))
